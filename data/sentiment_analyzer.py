@@ -1,4 +1,3 @@
-
 """ 
 
 link: https://www.marketaux.com/account/dashboard
@@ -11,7 +10,7 @@ import requests
 import json
 from datetime import datetime, timedelta
 
-class NewsSentiment:
+class Sentiment:
     def __init__(self):
         self.api_token = 'VbpPND1Ic1JnfJW2ms9IpAS9b3NE4xh76zWxanA6'
 
@@ -54,7 +53,7 @@ def save_to_json(data, filename):
         json.dump(data, f, indent=4)
 
 
-news = NewsSentiment()
+news = Sentiment()
 ticker = 'AAPL' 
 start_date = datetime(2016, 1, 4)  
 end_date = datetime.today()  
