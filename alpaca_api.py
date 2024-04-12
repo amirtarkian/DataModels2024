@@ -21,7 +21,7 @@ base_url = 'https://paper-api.alpaca.markets'
 api = tradeapi.REST(api_key, api_secret, base_url, api_version='v2')
 
 symbol = 'AAPL' 
-start_date = datetime(2022, 1, 1).astimezone(pytz.timezone('UTC')) 
+start_date = datetime(2000, 1, 1).astimezone(pytz.timezone('UTC')) 
 end_date = datetime(2022, 1, 31).astimezone(pytz.timezone('UTC'))  
 
 daily_prices = api.get_bars(symbol, tradeapi.TimeFrame.Day, start_date.isoformat(), end_date.isoformat()).df
