@@ -10,62 +10,64 @@ import requests
 import json
 from datetime import datetime, timedelta
 
-class Sentiment:
-    def __init__(self):
-        self.api_token = 'VbpPND1Ic1JnfJW2ms9IpAS9b3NE4xh76zWxanA6'
+import requests
+import json
+from datetime import datetime, timedelta
 
-    def fetch_news(self, ticker, start_date, end_date):
-        # Prepare date formatting for the API request
-        published_after = start_date.strftime("%Y-%m-%d")
-        published_before = end_date.strftime("%Y-%m-%d")
+# API Token should be kept secure and not hardcoded in production
+API_TOKEN = 'VbpPND1Ic1JnfJW2ms9IpAS9b3NE4xh76zWxanA6'
 
-        # Construct the URL with all necessary parameters
-        url = f"https://api.marketaux.com/v1/news/all?symbols={ticker}&filter_entities=true&language=en&api_token={self.api_token}&published_after={published_after}&published_before={published_before}"
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            sentiment_score = self.calculate_sentiment(data)
-            return sentiment_score
-        else:
-            print(f"Failed to fetch news between {published_after} and {published_before}: {response.status_code}")
+def fetch_news(ticker, start_date, end_date):
+    published_after = start_date.strftime("%Y-%m-%d")
+    published_before = (end_date + timedelta(days=1)).strftime("%Y-%m-%d")
 
-    def calculate_sentiment(self, data):
-        total_sentiment_score = 0
-        sentiment_count = 0
+    url = f"https://api.marketaux.com/v1/news/all?symbols={ticker}&filter_entities=true&language=en&api_token={API_TOKEN}&published_after={published_after}&published_before={published_before}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        sentiment_score = calculate_sentiment(data)
+        return sentiment_score
+    else:
+        print(f"Failed to fetch news between {published_after} and {published_before}: {response.status_code}")
+        return None
 
-        # Calculate the average sentiment score from the data received
-        for article in data.get('data', []):
-            for entity in article.get('entities', []):
-                sentiment_score = entity.get('sentiment_score', None)
-                if sentiment_score is not None:
-                    total_sentiment_score += sentiment_score
-                    sentiment_count += 1
+def calculate_sentiment(data):
+    total_sentiment_score = 0
+    sentiment_count = 0
 
-        if sentiment_count > 0:
-            return total_sentiment_score / sentiment_count
-        else:
-            print("No valid sentiment data available.")
+    for article in data.get('data', []):
+        for entity in article.get('entities', []):
+            sentiment_score = entity.get('sentiment_score', None)
+            if sentiment_score is not None:
+                total_sentiment_score += sentiment_score
+                sentiment_count += 1
+
+    if sentiment_count > 0:
+        return total_sentiment_score / sentiment_count
+    else:
+        return None
 
 def save_to_json(data, filename):
     with open(filename, 'w') as f:
         json.dump(data, f, indent=4)
 
-def main():
-    news = Sentiment()
-    ticker = 'AAPL'
-    start_date = datetime.today() - timedelta(days=6)  # Adjust the days as needed
-    end_date = datetime.today()
+ticker = 'AAPL'
+start_date = datetime.today() - timedelta(days=6)
+end_date = datetime.today()
 
-    sentiment_data = {}
-    current_date = start_date
-    while current_date <= end_date:
-        sentiment_score = news.fetch_news(ticker, start_date, current_date)
-        date_str = current_date.strftime("%Y-%m-%d")
+sentiment_data = {}
+last_valid_sentiment = None
+
+current_date = start_date
+while current_date <= end_date:
+    sentiment_score = fetch_news(ticker, start_date, current_date)
+    date_str = current_date.strftime("%Y-%m-%d")
+    if sentiment_score is not None:
         sentiment_data[date_str] = sentiment_score
-        print(f"Sentiment score for {ticker} up to {date_str}: {sentiment_score}")
-        current_date += timedelta(days=1)
+        last_valid_sentiment = sentiment_score
+    else:
+        sentiment_data[date_str] = last_valid_sentiment  # Use last valid sentiment if current is None
+    print(f"Sentiment score for {ticker} up to {date_str}: {sentiment_data[date_str]}")
+    current_date += timedelta(days=1)
 
-    save_to_json(sentiment_data, f"{ticker}_sentiment_data.json")
-
-if __name__ == "__main__":
-    main()
+save_to_json(sentiment_data, f"{ticker}_cumulative_sentiment_data.json")
