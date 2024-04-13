@@ -52,11 +52,11 @@ def save_to_json(data, filename):
         json.dump(data, f, indent=4)
 
 ticker = 'AAPL'
-start_date = datetime.today() - timedelta(days=6)
+start_date = datetime.today() - timedelta(days=69)
 end_date = datetime.today()
 
 sentiment_data = {}
-last_valid_sentiment = None
+last_valid_sentiment = 0.00
 
 current_date = start_date
 while current_date <= end_date:
@@ -66,7 +66,7 @@ while current_date <= end_date:
         sentiment_data[date_str] = sentiment_score
         last_valid_sentiment = sentiment_score
     else:
-        sentiment_data[date_str] = last_valid_sentiment  # Use last valid sentiment if current is None
+        sentiment_data[date_str] = last_valid_sentiment  # Use last valid sentiment if current is none or null
     print(f"Sentiment score for {ticker} up to {date_str}: {sentiment_data[date_str]}")
     current_date += timedelta(days=1)
 
