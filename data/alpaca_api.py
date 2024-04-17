@@ -18,6 +18,10 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 import matplotlib.pyplot as plt
+import xgboost as xgb
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
+
 
 
 # API credentials
@@ -40,13 +44,24 @@ print(daily_prices)
 X = daily_prices[['close', 'high', 'low', 'trade_count', 'open']]
 Y = daily_prices['volume']
 
+# Exponential Smoothing
+model = ExponentialSmoothing(Y, trend="add", seasonal="add", seasonal_periods=12)
+fitted_model = model.fit()
+
 plt.plot(Y)
+plt.show()
+
+# Plot original data and smoothed data
+plt.figure(figsize=(12, 6))
+plt.plot(Y.index, Y, label='Original Volume')
+plt.plot(Y.index, fitted_model.fittedvalues, label='Smoothed Volume', color='red')
+plt.legend()
 plt.show()
 
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=40)
 
 # i initially had this a decision tree but the metrics were bad so switched it to forest which improved it some
-regressor = RandomForestRegressor(n_estimators=100, random_state=40)
+regressor = xgb.XGBRegressor(n_estimators=100, random_state=40)
 regressor.fit(X_train, y_train)
 
 predictions = regressor.predict(X_test)
