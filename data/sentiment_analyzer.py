@@ -52,9 +52,9 @@ def save_to_json(data, filename):
         json.dump(data, f, indent=4)
 
 ticker = 'AAPL'
-end_date =datetime(2024, 2, 4)
-start_date = end_date - timedelta(days=39)
-
+end_date =datetime(2023, 10, 27)
+# start_date = end_date - timedelta(days=86)
+start_date = datetime(2023,9,30)
 
 sentiment_data = {}
 last_valid_sentiment = 0.00
