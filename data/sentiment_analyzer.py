@@ -53,8 +53,8 @@ def save_to_json(data, filename):
 
 ticker = 'AAPL'
 
-end_date = datetime(2023,9,30)
-start_date = end_date - timedelta(days=72)
+end_date = datetime(2023,7,20)
+start_date = datetime(2023,6,10)
 
 sentiment_data = {}
 last_valid_sentiment = 0.00

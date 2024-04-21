@@ -35,6 +35,7 @@ print(daily_prices)
 
 
 X = daily_prices[['close', 'high', 'low', 'trade_count', 'open', 'vwap']]
+
 Y = daily_prices['volume']
 
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=40)
