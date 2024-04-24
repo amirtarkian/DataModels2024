@@ -14,7 +14,6 @@ import requests
 import json
 from datetime import datetime, timedelta
 
-# API Token should be kept secure and not hardcoded in production
 API_TOKEN = 'VbpPND1Ic1JnfJW2ms9IpAS9b3NE4xh76zWxanA6'
 
 def fetch_news(ticker, start_date, end_date):
